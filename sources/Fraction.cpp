@@ -135,7 +135,7 @@ namespace ariel
             || (other.denominator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()) 
             || (this->numerator <= std::numeric_limits<int>::min() + 100) && (other.numerator <= std::numeric_limits<int>::min() + 100))
         {
-            throw std::overflow_error("too large number!");
+            throw std::overflow_error("Error: Overflow during addition.");
         }
         return Fraction(this->numerator * other.denominator + this->denominator * other.numerator, this->denominator * other.denominator);
     }
@@ -149,7 +149,7 @@ namespace ariel
         if ((this->numerator <= std::numeric_limits<int>::min() + 100 && other.numerator <= std::numeric_limits<int>::min() + 100) 
         || (this->numerator >= std::numeric_limits<int>::max() - 100 && other.numerator <= std::numeric_limits<int>::min() + 100))
         {
-            throw std::overflow_error("too large number!");
+            throw std::overflow_error("Error: Overflow during subtraction.");
         }
         return Fraction(this->numerator * other.denominator - this->denominator * other.numerator, this->denominator * other.denominator);
     }
@@ -165,7 +165,7 @@ namespace ariel
             || (other.numerator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()) 
             || (other.denominator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()))
         {
-            throw std::overflow_error("too large number!");
+            throw std::overflow_error("Error: Overflow during multiplication.");
         }
         return Fraction(this->numerator * other.numerator, this->denominator * other.denominator);
     }
@@ -179,7 +179,7 @@ namespace ariel
         if ((this->numerator == std::numeric_limits<int>::max() && this->denominator != std::numeric_limits<int>::max()) 
         || (this->denominator == std::numeric_limits<int>::max() && this->numerator < std::numeric_limits<int>::max() - 100))
         {
-            throw std::overflow_error("too large number!");
+            throw std::overflow_error("Error: Overflow during division.");
         }
         return Fraction(this->numerator * other.denominator, this->denominator * other.numerator);
     }
