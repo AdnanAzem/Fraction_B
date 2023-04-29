@@ -94,8 +94,8 @@ namespace ariel
             denominator /= gcd;
             if (denominator < 0)
             {
-                numerator *= -1;
-                denominator *= -1;
+                numerator = -numerator;
+                denominator = -denominator;
             }
         }
     }
@@ -112,6 +112,7 @@ namespace ariel
 
     // ===================== Overloaded Arithmetic Operators =====================
 
+    // Addittion Functions
     Fraction Fraction::operator+(const Fraction &other) const
     {
         if (other.denominator == 0 || this->denominator == 0)
@@ -127,6 +128,23 @@ namespace ariel
         return Fraction(this->numerator * other.denominator + this->denominator * other.numerator, this->denominator * other.denominator);
     }
 
+    Fraction operator+(const float &number, const Fraction &fraction)
+    {
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float temp = set3DigitsBeyondThePoints(num);
+        float ans = temp + number;
+        return Fraction(ans);
+    }
+
+    Fraction operator+(const Fraction &fraction, const float &number)
+    {
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float temp = set3DigitsBeyondThePoints(num);
+        float ans = temp + number;
+        return Fraction(ans);
+    }
+
+    // Subtraction Functions
     Fraction Fraction::operator-(const Fraction &other) const
     {
         if (other.denominator == 0 || this->denominator == 0)
@@ -141,6 +159,25 @@ namespace ariel
         return Fraction(this->numerator * other.denominator - this->denominator * other.numerator, this->denominator * other.denominator);
     }
 
+    Fraction operator-(const float &number, const Fraction &fraction)
+    {
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float temp = set3DigitsBeyondThePoints(num);
+        float ans = number - temp;
+        return Fraction(ans);
+    }
+
+    Fraction operator-(const Fraction &fraction, const float &number)
+    {
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float temp = set3DigitsBeyondThePoints(num);
+        float ans = temp - number;
+        return Fraction(ans);
+        // Fraction ot(n);
+        // return f - ot;
+    }
+
+    // Multiplication Functions
     Fraction Fraction::operator*(const Fraction &other) const
     {
         if (other.denominator == 0 || this->denominator == 0)
@@ -157,6 +194,20 @@ namespace ariel
         return Fraction(this->numerator * other.numerator, this->denominator * other.denominator);
     }
 
+    Fraction operator*(const float &number, const Fraction &fraction)
+    {
+        Fraction temp(number);
+        return temp * fraction;
+    }
+
+    Fraction operator*(const Fraction &fraction, const float &number)
+    {
+        Fraction temp(number);
+        return fraction * temp;
+    }
+
+
+    // Division Functions
     Fraction Fraction::operator/(const Fraction &other) const
     {
         if (other.denominator == 0 || this->denominator == 0 || other.numerator == 0)
@@ -171,55 +222,16 @@ namespace ariel
         return Fraction(this->numerator * other.denominator, this->denominator * other.numerator);
     }
 
-    Fraction operator+(const float &n, const Fraction &f)
+    Fraction operator/(const float &number, const Fraction &fraction)
     {
-        float num = (float)f.numerator / (float)f.denominator;
-        float res = set3DigitsBeyondThePoints(num);
-        float ans = res + n;
-        return Fraction(ans);
-    }
-    Fraction operator-(const float &n, const Fraction &f)
-    {
-        float num = (float)f.numerator / (float)f.denominator;
-        float res = set3DigitsBeyondThePoints(num);
-        float ans = n - res;
-        return Fraction(ans);
-    }
-    Fraction operator*(const float &n, const Fraction &f)
-    {
-        Fraction ot(n);
-        return ot * f;
-    }
-    Fraction operator/(const float &n, const Fraction &f)
-    {
-        Fraction ot(n);
-        return ot / f;
+        Fraction temp(number);
+        return temp / fraction;
     }
 
-    Fraction operator+(const Fraction &f, const float &n)
+    Fraction operator/(const Fraction &fraction, const float &number)
     {
-        float num = (float)f.numerator / (float)f.denominator;
-        float res = set3DigitsBeyondThePoints(num);
-        float ans = res + n;
-        return Fraction(ans);
-    }
-
-    Fraction operator-(const Fraction &f, const float &n)
-    {
-        Fraction ot(n);
-        return f - ot;
-    }
-
-    Fraction operator*(const Fraction &f, const float &n)
-    {
-        Fraction ot(n);
-        return f * ot;
-    }
-
-    Fraction operator/(const Fraction &f, const float &n)
-    {
-        Fraction ot(n);
-        return f / ot;
+        Fraction temp(number);
+        return fraction / temp;
     }
     // ===================== End Overloaded Arithmetic Operators =====================
 
