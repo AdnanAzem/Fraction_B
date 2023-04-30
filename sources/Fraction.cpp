@@ -24,11 +24,8 @@ namespace ariel
         int num = static_cast<int>(round3Digits * 1000);
         int den = 1000;
 
-        // set the data members
         this->numerator = num;
         this->denominator = den;
-
-        // reduce the fraction
         reduce();
     }
     // ===================== End Constructors =====================
@@ -58,29 +55,24 @@ namespace ariel
     // ===================== End Getters =====================
 
     // ===================== Helper Functions =====================
+
+    // return float number whith 3 digits after the point
     float Fraction::set3DigitsBeyondThePoint(float num)
     {
-        // multiply num by 1000 and round the
-        // number without decimal point
-        float round = roundf(num * 1000);
-
-        // return the number into float
-        float ret = round / 1000;
-
+        float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
+        float ret = round / 1000;        // return the number into float
         return ret;
     }
 
-    float set3DigitsBeyondThePoints(float num)
+    // return float number whith 3 digits after the point
+    float set3DigitsAfterThePoint(float num)
     {
-        // multiply num by 1000 and round the
-        // number without decimal point
-        float round = roundf(num * 1000);
-
-        // return the number into float
-        float ret = round / 1000;
-
+        float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
+        float ret = round / 1000;        // return the number into float
         return ret;
     }
+
+    // return the fraction in reduced form
     void Fraction::reduce()
     {
         if (numerator == 0)
@@ -89,7 +81,7 @@ namespace ariel
         }
         else
         {
-            int gcd = GCD(abs(numerator), abs(denominator));
+            int gcd = GCD(abs(numerator), abs(denominator)); // find the gcd
             numerator /= gcd;
             denominator /= gcd;
             if (denominator < 0)
@@ -100,6 +92,7 @@ namespace ariel
         }
     }
 
+    // return the gcd between 2 numbers
     int Fraction::GCD(int a, int b) const
     {
         if (b == 0)
@@ -107,6 +100,33 @@ namespace ariel
             return a;
         }
         return GCD(b, a % b);
+    }
+
+    // return true if there is overflow and return false else
+    bool checkOverflow(const Fraction &frac1, const Fraction &frac2, char op){
+        switch (op) {
+            case '+':
+                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
+                        || (frac2.denominator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()) 
+                        || (frac1.numerator <= std::numeric_limits<int>::min() + 100) && (frac2.numerator <= std::numeric_limits<int>::min() + 100));
+
+            case '-':
+                return ((frac1.numerator <= std::numeric_limits<int>::min() + 100 && frac2.numerator <= std::numeric_limits<int>::min() + 100) 
+                        || (frac1.numerator >= std::numeric_limits<int>::max() - 100 && frac2.numerator <= std::numeric_limits<int>::min() + 100));
+
+            case '*':
+                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
+                        || (frac1.denominator == std::numeric_limits<int>::max() && frac1.numerator != std::numeric_limits<int>::max()) 
+                        || (frac2.numerator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()) 
+                        || (frac2.denominator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()));
+
+            case '/':
+                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
+                        || (frac1.denominator == std::numeric_limits<int>::max() && frac1.numerator < std::numeric_limits<int>::max() - 100));
+
+            default:
+                return false;
+        }
     }
     // ===================== End Helper Functions =====================
 
@@ -119,9 +139,7 @@ namespace ariel
         {
             throw std::runtime_error("Dennominator is 0");
         }
-        if ((this->numerator == std::numeric_limits<int>::max() && this->denominator != std::numeric_limits<int>::max()) 
-            || (other.denominator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()) 
-            || (this->numerator <= std::numeric_limits<int>::min() + 100) && (other.numerator <= std::numeric_limits<int>::min() + 100))
+        if (checkOverflow(*this,other,'+'))
         {
             throw std::overflow_error("Error: Overflow during addition.");
         }
@@ -131,7 +149,7 @@ namespace ariel
     Fraction operator+(const float &number, const Fraction &fraction)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsBeyondThePoints(num);
+        float temp = set3DigitsAfterThePoint(num);
         float ans = temp + number;
         return Fraction(ans);
     }
@@ -139,7 +157,7 @@ namespace ariel
     Fraction operator+(const Fraction &fraction, const float &number)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsBeyondThePoints(num);
+        float temp = set3DigitsAfterThePoint(num);
         float ans = temp + number;
         return Fraction(ans);
     }
@@ -151,8 +169,7 @@ namespace ariel
         {
             throw std::runtime_error("Dennominator is 0");
         }
-        if ((this->numerator <= std::numeric_limits<int>::min() + 100 && other.numerator <= std::numeric_limits<int>::min() + 100) 
-        || (this->numerator >= std::numeric_limits<int>::max() - 100 && other.numerator <= std::numeric_limits<int>::min() + 100))
+        if (checkOverflow(*this,other,'-'))
         {
             throw std::overflow_error("Error: Overflow during subtraction.");
         }
@@ -162,7 +179,7 @@ namespace ariel
     Fraction operator-(const float &number, const Fraction &fraction)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsBeyondThePoints(num);
+        float temp = set3DigitsAfterThePoint(num);
         float ans = number - temp;
         return Fraction(ans);
     }
@@ -170,11 +187,9 @@ namespace ariel
     Fraction operator-(const Fraction &fraction, const float &number)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsBeyondThePoints(num);
+        float temp = set3DigitsAfterThePoint(num);
         float ans = temp - number;
         return Fraction(ans);
-        // Fraction ot(n);
-        // return f - ot;
     }
 
     // Multiplication Functions
@@ -184,10 +199,7 @@ namespace ariel
         {
             throw std::runtime_error("Dennominator is 0");
         }
-        if ((this->numerator == std::numeric_limits<int>::max() && this->denominator != std::numeric_limits<int>::max()) 
-            || (this->denominator == std::numeric_limits<int>::max() && this->numerator != std::numeric_limits<int>::max()) 
-            || (other.numerator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()) 
-            || (other.denominator == std::numeric_limits<int>::max() && other.denominator != std::numeric_limits<int>::max()))
+        if (checkOverflow(*this,other,'*'))
         {
             throw std::overflow_error("Error: Overflow during multiplication.");
         }
@@ -212,10 +224,9 @@ namespace ariel
     {
         if (other.denominator == 0 || this->denominator == 0 || other.numerator == 0)
         {
-            throw std::runtime_error("Dennominator is 0");
+            throw std::runtime_error("Error: Dennominator is 0");
         }
-        if ((this->numerator == std::numeric_limits<int>::max() && this->denominator != std::numeric_limits<int>::max()) 
-        || (this->denominator == std::numeric_limits<int>::max() && this->numerator < std::numeric_limits<int>::max() - 100))
+        if (checkOverflow(*this,other,'/'))
         {
             throw std::overflow_error("Error: Overflow during division.");
         }
@@ -236,105 +247,127 @@ namespace ariel
     // ===================== End Overloaded Arithmetic Operators =====================
 
     // ===================== Overloaded Compromise Operators =====================
+
+    // Operator ==
     bool Fraction::operator==(const Fraction &other) const
     {
-        // check by 2 fractions or by 2 floats
-        float f1 = set3DigitsBeyondThePoints((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsBeyondThePoints((float)other.numerator/(float)other.denominator);
+        // check in fraction form or float form
+        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
+        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
         return this->numerator == other.numerator && this->denominator == other.denominator || f1 == f2;
     }
 
+    bool operator==(const Fraction &fraction, const float &number)
+    {
+        // check in fraction form or float form
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float res = set3DigitsAfterThePoint(num);
+        Fraction other(number);
+        return fraction == other || res == number;
+    }
+
+    bool operator==(const float &number, const Fraction &fraction)
+    {
+        // check in fraction form or float form
+        float num = (float)fraction.numerator / (float)fraction.denominator;
+        float res = set3DigitsAfterThePoint(num);
+        Fraction other(number);
+        return fraction == other || number == res;
+    }
+
+    // Operator <
     bool Fraction::operator<(const Fraction &other) const
     {
-        return this->numerator * other.denominator < this->denominator * other.numerator;
+        // check in fraction form or float form
+        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
+        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        return this->numerator * other.denominator < this->denominator * other.numerator || f1 < f2;
     }
 
+    bool operator<(const Fraction &fraction, const float &number)
+    {
+        // check in fraction form or float form
+        Fraction other(number);
+        return (float)fraction.numerator / (float)fraction.denominator < number || fraction < other;
+    }
+
+    bool operator<(const float &number, const Fraction &fraction)
+    {
+        // check in fraction form or float form
+        Fraction other(number);
+        return number < (float)fraction.numerator / (float)fraction.denominator || other < fraction;
+    }
+
+    // Operator <=
     bool Fraction::operator<=(const Fraction &other) const
     {
-        return this->numerator * other.denominator <= this->denominator * other.numerator;
+        // check in fraction form or float form
+        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
+        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        return this->numerator * other.denominator <= this->denominator * other.numerator || f1 <= f2;
     }
 
+    bool operator<=(const Fraction &fraction, const float &number)
+    {
+        // check in fraction form or float form
+        Fraction other(number);
+        return (float)fraction.numerator / (float)fraction.denominator <= number || fraction <= other;
+    }
+
+    bool operator<=(const float &number, const Fraction &fraction)
+    {
+        // check in fraction form or float form
+        Fraction other(number);
+        return number <= (float)fraction.numerator / (float)fraction.denominator || other <= fraction;
+    }
+
+
+
+    // Operator >
     bool Fraction::operator>(const Fraction &other) const
     {
-        return this->numerator * other.denominator > this->denominator * other.numerator;
+        // check in fraction form or float form
+        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
+        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        return this->numerator * other.denominator > this->denominator * other.numerator || f1 > f2;
     }
 
+    bool operator>(const Fraction &fraction, const float &number)
+    {
+        // check in fraction form or float form
+        float res = (float)fraction.numerator / (float)fraction.denominator;
+        Fraction other(number);
+        return fraction > other || res > number;
+    }
+
+    bool operator>(const float &number, const Fraction &fraction)
+    {
+        // check in fraction form or float form
+        Fraction other(number);
+        return number > (float)fraction.numerator / (float)fraction.denominator || other > fraction;
+    }
+
+    //Operator >=
     bool Fraction::operator>=(const Fraction &other) const
     {
-        return this->numerator * other.denominator >= this->denominator * other.numerator;
+        // check in fraction form or float form
+        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
+        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        return this->numerator * other.denominator >= this->denominator * other.numerator || f1 >= f2;
     }
 
-    bool operator==(const Fraction &ot, const float &n)
+    bool operator>=(const Fraction &fraction, const float &number)
     {
-        float num = (float)ot.numerator / (float)ot.denominator;
-        float res = set3DigitsBeyondThePoints(num);
-        Fraction f(n);
-        return ot == f || res == n;
+        // check in fraction form or float form
+        Fraction other(number);
+        return (float)fraction.numerator / (float)fraction.denominator >= number || fraction >= other;
     }
 
-    bool operator>=(const Fraction &ot, const float &n)
+    bool operator>=(const float &number, const Fraction &fraction)
     {
-        return (float)ot.numerator / (float)ot.denominator >= n;
-        // Fraction f(n);
-        // return ot>= f;
-    }
-
-    bool operator>(const Fraction &ot, const float &n)
-    {
-        float res = (float)ot.numerator / (float)ot.denominator;
-        Fraction f(n);
-        return ot > f || res > n;
-    }
-
-    bool operator<=(const Fraction &ot, const float &n)
-    {
-        return (float)ot.numerator / (float)ot.denominator <= n;
-        // Fraction f(n);
-        // return ot <= f;
-    }
-
-    bool operator<(const Fraction &ot, const float &n)
-    {
-        return (float)ot.numerator / (float)ot.denominator < n;
-        // Fraction f(n);
-        // return ot < f;
-    }
-
-    bool operator==(const float &n, const Fraction &f)
-    {
-        float num = (float)f.numerator / (float)f.denominator;
-        float res = set3DigitsBeyondThePoints(num);
-        // float res = (float)f.numerator/(float)f.denominator;
-        Fraction ot(n);
-        return f == ot || n == res;
-    }
-
-    bool operator<(const float &n, const Fraction &f)
-    {
-        return n < (float)f.numerator / (float)f.denominator;
-        // Fraction ot(n);
-        // return f > ot;
-    }
-
-    bool operator<=(const float &n, const Fraction &f)
-    {
-        return n <= (float)f.numerator / (float)f.denominator;
-        // Fraction ot(n);
-        // return f >= ot;
-    }
-
-    bool operator>(const float &n, const Fraction &f)
-    {
-        return n > (float)f.numerator / (float)f.denominator;
-        // Fraction ot(n);
-        // return f < ot;
-    }
-
-    bool operator>=(const float &n, const Fraction &f)
-    {
-        return n >= (float)f.numerator / (float)f.denominator;
-        // Fraction ot(n);
-        // return f <= ot;
+        // check in fraction form or float form
+        Fraction other(number);
+        return number >= (float)fraction.numerator / (float)fraction.denominator || other >= fraction;
     }
     // ===================== End Overloaded Compromise Operators =====================
 
@@ -367,13 +400,13 @@ namespace ariel
     // ===================== End Increasment & Decreasment =====================
 
     // ===================== Overload Input & output =====================
-    ostream &operator<<(ostream &output, const Fraction &f)
+    ostream &operator<<(ostream &output, const Fraction &fraction)
     {
-        output << f.numerator << "/" << f.denominator;
+        output << fraction.numerator << "/" << fraction.denominator;
         return output;
     }
 
-    istream &operator>>(istream &input, Fraction &f)
+    istream &operator>>(istream &input, Fraction &fraction)
     {
         int num, den;
         if (input.fail() || input.peek() == EOF)
@@ -390,7 +423,7 @@ namespace ariel
         {
             throw runtime_error("Error: Denominator can't be 0");
         }
-        f = Fraction(num, den);
+        fraction = Fraction(num, den);
         return input;
     }
     // ===================== End Overload Input & output =====================

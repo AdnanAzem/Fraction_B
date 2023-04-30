@@ -28,9 +28,10 @@ namespace ariel{
 
         //helper functions
         float set3DigitsBeyondThePoint(float );
-        friend float set3DigitsBeyondThePoints(float );
+        friend float set3DigitsAfterThePoint(float );
         void reduce();
         int GCD(int , int ) const;
+        friend bool checkOverflow(const Fraction &, const Fraction &, char );
 
         // Overloaded operators 
         Fraction operator+(const Fraction&) const;
