@@ -27,11 +27,11 @@ namespace ariel{
         int getDenominator();
 
         //helper functions
-        float set3DigitsBeyondThePoint(float );
-        friend float set3DigitsAfterThePoint(float );
-        void reduce();
-        int GCD(int , int ) const;
-        friend bool checkOverflow(const Fraction &, const Fraction &, char );
+        friend bool checkFractionOverflow(const Fraction& , const Fraction& , char ); // check overflow between 2 fractions
+        float set3Digits(float ); // set 3 digits after point
+        friend float setFloatWith3Digits(float ); // set 3 digits after point
+        void reduce(); // reduced form of fraction
+        int GCD(int , int ) const; // find gcd between 2 numbers
 
         // Overloaded operators 
         Fraction operator+(const Fraction&) const;
@@ -67,12 +67,10 @@ namespace ariel{
         friend bool operator>(const float& ,const Fraction &);
         friend bool operator>=(const float& ,const Fraction &);
 
-
-        
-        Fraction& operator++();
-        Fraction operator++( int );
-        Fraction& operator--();
-        Fraction operator--( int );
+        Fraction& operator++(); // Prefix
+        Fraction operator++( int ); // Postfix
+        Fraction& operator--(); // Prefix
+        Fraction operator--( int ); // Postfix
 
         friend ostream & operator<<(ostream&, const Fraction&);
         friend istream& operator>> (istream&, Fraction& );

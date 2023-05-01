@@ -17,7 +17,7 @@ namespace ariel
     Fraction::Fraction(float n)
     {
         // round num to 3 digits beyond the decimal point for accuarcy
-        float round3Digits = set3DigitsBeyondThePoint(n);
+        float round3Digits = set3Digits(n);
 
         // represent the float without decimal point and cast it to int,
         //  then represent it as numerator and denominator
@@ -56,8 +56,38 @@ namespace ariel
 
     // ===================== Helper Functions =====================
 
+    // check overflow between 2 fractions
+    bool checkFractionOverflow(const Fraction& f1, const Fraction& f2, char op) {
+        // Calculate the result of the arithmetic operation using long longs to avoid overflow
+        long long result = 0;
+        long long result2 = 0;
+        if (op == '+') {
+            result = (long long)f1.numerator * f2.denominator + (long long)f2.numerator * f1.denominator;
+        }
+        else if (op == '-') {
+            result = (long long)f1.numerator * f2.denominator - (long long)f2.numerator * f1.denominator;
+        }
+        else if (op == '*') {
+            result = (long long)f1.numerator * f2.numerator ; 
+            result2 = (long long)f1.denominator * f2.denominator;
+        }
+        else if (op == '/') {
+            result = (long long)f1.numerator * f2.denominator;
+            result2 = (long long)f2.numerator * f1.denominator;
+        }
+
+        // Check if the result overflows the integer limits
+        if (result > std::numeric_limits<int>::max() || result < std::numeric_limits<int>::min() || result2 > std::numeric_limits<int>::max() || result2 < std::numeric_limits<int>::min()) {
+            return true; // overflow detected
+        }
+
+        // No overflow detected
+        return false;
+    }
+
+
     // return float number whith 3 digits after the point
-    float Fraction::set3DigitsBeyondThePoint(float num)
+    float Fraction::set3Digits(float num)
     {
         float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
         float ret = round / 1000;        // return the number into float
@@ -65,7 +95,7 @@ namespace ariel
     }
 
     // return float number whith 3 digits after the point
-    float set3DigitsAfterThePoint(float num)
+    float setFloatWith3Digits(float num)
     {
         float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
         float ret = round / 1000;        // return the number into float
@@ -84,7 +114,7 @@ namespace ariel
             int gcd = GCD(abs(numerator), abs(denominator)); // find the gcd
             numerator /= gcd;
             denominator /= gcd;
-            if (denominator < 0)
+            if (denominator < 0) 
             {
                 numerator = -numerator;
                 denominator = -denominator;
@@ -101,33 +131,6 @@ namespace ariel
         }
         return GCD(b, a % b);
     }
-
-    // return true if there is overflow and return false else
-    bool checkOverflow(const Fraction &frac1, const Fraction &frac2, char op){
-        switch (op) {
-            case '+':
-                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
-                        || (frac2.denominator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()) 
-                        || (frac1.numerator <= std::numeric_limits<int>::min() + 100) && (frac2.numerator <= std::numeric_limits<int>::min() + 100));
-
-            case '-':
-                return ((frac1.numerator <= std::numeric_limits<int>::min() + 100 && frac2.numerator <= std::numeric_limits<int>::min() + 100) 
-                        || (frac1.numerator >= std::numeric_limits<int>::max() - 100 && frac2.numerator <= std::numeric_limits<int>::min() + 100));
-
-            case '*':
-                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
-                        || (frac1.denominator == std::numeric_limits<int>::max() && frac1.numerator != std::numeric_limits<int>::max()) 
-                        || (frac2.numerator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()) 
-                        || (frac2.denominator == std::numeric_limits<int>::max() && frac2.denominator != std::numeric_limits<int>::max()));
-
-            case '/':
-                return ((frac1.numerator == std::numeric_limits<int>::max() && frac1.denominator != std::numeric_limits<int>::max()) 
-                        || (frac1.denominator == std::numeric_limits<int>::max() && frac1.numerator < std::numeric_limits<int>::max() - 100));
-
-            default:
-                return false;
-        }
-    }
     // ===================== End Helper Functions =====================
 
     // ===================== Overloaded Arithmetic Operators =====================
@@ -135,11 +138,8 @@ namespace ariel
     // Addittion Functions
     Fraction Fraction::operator+(const Fraction &other) const
     {
-        if (other.denominator == 0 || this->denominator == 0)
-        {
-            throw std::runtime_error("Dennominator is 0");
-        }
-        if (checkOverflow(*this,other,'+'))
+        // return error if there is overflow
+        if(checkFractionOverflow(*this,other,'+'))
         {
             throw std::overflow_error("Error: Overflow during addition.");
         }
@@ -149,7 +149,7 @@ namespace ariel
     Fraction operator+(const float &number, const Fraction &fraction)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsAfterThePoint(num);
+        float temp = setFloatWith3Digits(num);
         float ans = temp + number;
         return Fraction(ans);
     }
@@ -157,7 +157,7 @@ namespace ariel
     Fraction operator+(const Fraction &fraction, const float &number)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsAfterThePoint(num);
+        float temp = setFloatWith3Digits(num);
         float ans = temp + number;
         return Fraction(ans);
     }
@@ -165,11 +165,8 @@ namespace ariel
     // Subtraction Functions
     Fraction Fraction::operator-(const Fraction &other) const
     {
-        if (other.denominator == 0 || this->denominator == 0)
-        {
-            throw std::runtime_error("Dennominator is 0");
-        }
-        if (checkOverflow(*this,other,'-'))
+        // return error if there is overflow
+        if(checkFractionOverflow(*this,other,'-'))
         {
             throw std::overflow_error("Error: Overflow during subtraction.");
         }
@@ -179,7 +176,7 @@ namespace ariel
     Fraction operator-(const float &number, const Fraction &fraction)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsAfterThePoint(num);
+        float temp = setFloatWith3Digits(num);
         float ans = number - temp;
         return Fraction(ans);
     }
@@ -187,7 +184,7 @@ namespace ariel
     Fraction operator-(const Fraction &fraction, const float &number)
     {
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = set3DigitsAfterThePoint(num);
+        float temp = setFloatWith3Digits(num);
         float ans = temp - number;
         return Fraction(ans);
     }
@@ -195,11 +192,8 @@ namespace ariel
     // Multiplication Functions
     Fraction Fraction::operator*(const Fraction &other) const
     {
-        if (other.denominator == 0 || this->denominator == 0)
-        {
-            throw std::runtime_error("Dennominator is 0");
-        }
-        if (checkOverflow(*this,other,'*'))
+        // return error if there is overflow
+        if(checkFractionOverflow(*this,other,'*'))
         {
             throw std::overflow_error("Error: Overflow during multiplication.");
         }
@@ -218,15 +212,16 @@ namespace ariel
         return fraction * temp;
     }
 
-
     // Division Functions
     Fraction Fraction::operator/(const Fraction &other) const
     {
-        if (other.denominator == 0 || this->denominator == 0 || other.numerator == 0)
+        // return error if the numenator of the second fraction is 0
+        if (other.numerator == 0)
         {
-            throw std::runtime_error("Error: Dennominator is 0");
+            throw std::runtime_error("Error: Divided by 0");
         }
-        if (checkOverflow(*this,other,'/'))
+        // return error if there is overflow
+        if(checkFractionOverflow(*this,other,'/'))
         {
             throw std::overflow_error("Error: Overflow during division.");
         }
@@ -252,8 +247,8 @@ namespace ariel
     bool Fraction::operator==(const Fraction &other) const
     {
         // check in fraction form or float form
-        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
+        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator == other.numerator && this->denominator == other.denominator || f1 == f2;
     }
 
@@ -261,7 +256,7 @@ namespace ariel
     {
         // check in fraction form or float form
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float res = set3DigitsAfterThePoint(num);
+        float res = setFloatWith3Digits(num);
         Fraction other(number);
         return fraction == other || res == number;
     }
@@ -270,7 +265,7 @@ namespace ariel
     {
         // check in fraction form or float form
         float num = (float)fraction.numerator / (float)fraction.denominator;
-        float res = set3DigitsAfterThePoint(num);
+        float res = setFloatWith3Digits(num);
         Fraction other(number);
         return fraction == other || number == res;
     }
@@ -279,8 +274,8 @@ namespace ariel
     bool Fraction::operator<(const Fraction &other) const
     {
         // check in fraction form or float form
-        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
+        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator < this->denominator * other.numerator || f1 < f2;
     }
 
@@ -302,8 +297,8 @@ namespace ariel
     bool Fraction::operator<=(const Fraction &other) const
     {
         // check in fraction form or float form
-        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
+        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator <= this->denominator * other.numerator || f1 <= f2;
     }
 
@@ -327,8 +322,8 @@ namespace ariel
     bool Fraction::operator>(const Fraction &other) const
     {
         // check in fraction form or float form
-        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
+        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator > this->denominator * other.numerator || f1 > f2;
     }
 
@@ -351,8 +346,8 @@ namespace ariel
     bool Fraction::operator>=(const Fraction &other) const
     {
         // check in fraction form or float form
-        float f1 = set3DigitsAfterThePoint((float)this->numerator/(float)this->denominator);
-        float f2 = set3DigitsAfterThePoint((float)other.numerator/(float)other.denominator);
+        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
+        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator >= this->denominator * other.numerator || f1 >= f2;
     }
 
@@ -372,12 +367,14 @@ namespace ariel
     // ===================== End Overloaded Compromise Operators =====================
 
     // ===================== Increasment & Decreasment =====================
+    // Prefix Increasment
     Fraction &Fraction::operator++()
     {
         numerator += denominator;
         return *this;
     }
 
+    // Postfix Increasment
     Fraction Fraction::operator++(int)
     {
         Fraction temp(*this);
@@ -385,12 +382,14 @@ namespace ariel
         return temp;
     }
 
+    // Prefix Decreasment
     Fraction &Fraction::operator--()
     {
         numerator -= denominator;
         return *this;
     }
 
+    // Postfix Decreasment
     Fraction Fraction::operator--(int)
     {
         Fraction temp(*this);
@@ -409,6 +408,7 @@ namespace ariel
     istream &operator>>(istream &input, Fraction &fraction)
     {
         int num, den;
+        // peek() - Returns the next character in the input sequence, without extracting it: The character is left as the next character to be extracted from the stream.
         if (input.fail() || input.peek() == EOF)
         {
             input.setstate(std::ios_base::failbit);
