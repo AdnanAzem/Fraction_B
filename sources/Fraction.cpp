@@ -1,10 +1,15 @@
 #include <iostream>
 #include "Fraction.hpp"
+#define MAX std::numeric_limits<int>::max()
+#define MIN std::numeric_limits<int>::min()
 
 namespace ariel
 {
     // ===================== Constructors =====================
+    // Default Constructor
     Fraction::Fraction() : numerator(0), denominator(1) {}
+
+    // Constructor with 2 integers inputs
     Fraction::Fraction(int num, int den) : numerator(num), denominator(den)
     {
         // throw error if the denominator is 0.
@@ -15,6 +20,7 @@ namespace ariel
         reduce();
     }
 
+    // Constructor whith float input
     Fraction::Fraction(float n)
     {
         // round num to 3 digits beyond the decimal point for accuarcy
@@ -78,7 +84,7 @@ namespace ariel
         }
 
         // Check if the result overflows the integer limits
-        if (result > std::numeric_limits<int>::max() || result < std::numeric_limits<int>::min() || result2 > std::numeric_limits<int>::max() || result2 < std::numeric_limits<int>::min()) {
+        if (result > MAX || result < MIN || result2 > MAX || result2 < MIN) { 
             return true; // overflow detected
         }
 
@@ -112,7 +118,8 @@ namespace ariel
         }
         else
         {
-            int gcd = GCD(abs(numerator), abs(denominator)); // find the gcd
+            // abs() - returns the absolute value (positive value) of an integer number
+            int gcd = GCD(abs(numerator), abs(denominator)); // send 2 positive number to find the gcd
             numerator /= gcd;
             denominator /= gcd;
             if (denominator < 0) 
