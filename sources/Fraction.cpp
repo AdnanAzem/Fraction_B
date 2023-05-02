@@ -7,6 +7,7 @@ namespace ariel
     Fraction::Fraction() : numerator(0), denominator(1) {}
     Fraction::Fraction(int num, int den) : numerator(num), denominator(den)
     {
+        // throw error if the denominator is 0.
         if (denominator == 0)
         {
             throw std::invalid_argument("Denominator cannot be zero.");
@@ -138,7 +139,7 @@ namespace ariel
     // Addittion Functions
     Fraction Fraction::operator+(const Fraction &other) const
     {
-        // return error if there is overflow
+        // throw error if there is overflow in addition
         if(checkFractionOverflow(*this,other,'+'))
         {
             throw std::overflow_error("Error: Overflow during addition.");
@@ -148,24 +149,20 @@ namespace ariel
 
     Fraction operator+(const float &number, const Fraction &fraction)
     {
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = setFloatWith3Digits(num);
-        float ans = temp + number;
-        return Fraction(ans);
+        // send to function +(fraction, fraction)
+        return Fraction(number) + fraction;
     }
 
     Fraction operator+(const Fraction &fraction, const float &number)
     {
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = setFloatWith3Digits(num);
-        float ans = temp + number;
-        return Fraction(ans);
+        // send to function +(fraction, fraction)
+        return fraction + Fraction(number);
     }
 
     // Subtraction Functions
     Fraction Fraction::operator-(const Fraction &other) const
     {
-        // return error if there is overflow
+        // throw error if there is overflow in subtraction
         if(checkFractionOverflow(*this,other,'-'))
         {
             throw std::overflow_error("Error: Overflow during subtraction.");
@@ -175,24 +172,20 @@ namespace ariel
 
     Fraction operator-(const float &number, const Fraction &fraction)
     {
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = setFloatWith3Digits(num);
-        float ans = number - temp;
-        return Fraction(ans);
+        // send to function -(fraction, fraction)
+        return Fraction(number) - fraction;
     }
 
     Fraction operator-(const Fraction &fraction, const float &number)
     {
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float temp = setFloatWith3Digits(num);
-        float ans = temp - number;
-        return Fraction(ans);
+        // send to function -(fraction, fraction)
+        return fraction - Fraction(number);
     }
 
     // Multiplication Functions
     Fraction Fraction::operator*(const Fraction &other) const
     {
-        // return error if there is overflow
+        // throw error if there is overflow in multiplication
         if(checkFractionOverflow(*this,other,'*'))
         {
             throw std::overflow_error("Error: Overflow during multiplication.");
@@ -202,25 +195,25 @@ namespace ariel
 
     Fraction operator*(const float &number, const Fraction &fraction)
     {
-        Fraction temp(number);
-        return temp * fraction;
+        // send to function *(fraction, fraction)
+        return Fraction(number) * fraction;
     }
 
     Fraction operator*(const Fraction &fraction, const float &number)
     {
-        Fraction temp(number);
-        return fraction * temp;
+        // send to function *(fraction, fraction)
+        return fraction * Fraction(number);
     }
 
     // Division Functions
     Fraction Fraction::operator/(const Fraction &other) const
     {
-        // return error if the numenator of the second fraction is 0
+        // throw error if the numenator of the second fraction is 0
         if (other.numerator == 0)
         {
             throw std::runtime_error("Error: Divided by 0");
         }
-        // return error if there is overflow
+        // throw error if there is overflow in division
         if(checkFractionOverflow(*this,other,'/'))
         {
             throw std::overflow_error("Error: Overflow during division.");
@@ -230,14 +223,14 @@ namespace ariel
 
     Fraction operator/(const float &number, const Fraction &fraction)
     {
-        Fraction temp(number);
-        return temp / fraction;
+        // send to function /(fraction, fraction)
+        return Fraction(number) / fraction;
     }
 
     Fraction operator/(const Fraction &fraction, const float &number)
     {
-        Fraction temp(number);
-        return fraction / temp;
+        // send to function /(fraction, fraction)
+        return fraction / Fraction(number);
     }
     // ===================== End Overloaded Arithmetic Operators =====================
 
@@ -246,7 +239,7 @@ namespace ariel
     // Operator ==
     bool Fraction::operator==(const Fraction &other) const
     {
-        // check in fraction form or float form
+        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
         float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
         float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator == other.numerator && this->denominator == other.denominator || f1 == f2;
@@ -254,26 +247,20 @@ namespace ariel
 
     bool operator==(const Fraction &fraction, const float &number)
     {
-        // check in fraction form or float form
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float res = setFloatWith3Digits(num);
-        Fraction other(number);
-        return fraction == other || res == number;
+        // send to function ==(fraction,fraction)
+        return fraction == Fraction(number);
     }
 
     bool operator==(const float &number, const Fraction &fraction)
     {
-        // check in fraction form or float form
-        float num = (float)fraction.numerator / (float)fraction.denominator;
-        float res = setFloatWith3Digits(num);
-        Fraction other(number);
-        return fraction == other || number == res;
+        // send to function ==(fraction,float)
+        return fraction == number;
     }
 
     // Operator <
     bool Fraction::operator<(const Fraction &other) const
     {
-        // check in fraction form or float form
+        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
         float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
         float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator < this->denominator * other.numerator || f1 < f2;
@@ -281,22 +268,20 @@ namespace ariel
 
     bool operator<(const Fraction &fraction, const float &number)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return (float)fraction.numerator / (float)fraction.denominator < number || fraction < other;
+        // send to function <(fraction,fraction)
+        return fraction < Fraction(number);
     }
 
     bool operator<(const float &number, const Fraction &fraction)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return number < (float)fraction.numerator / (float)fraction.denominator || other < fraction;
+        // send to function <(fraction,float)
+        return fraction > number;
     }
 
     // Operator <=
     bool Fraction::operator<=(const Fraction &other) const
     {
-        // check in fraction form or float form
+        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
         float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
         float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator <= this->denominator * other.numerator || f1 <= f2;
@@ -304,16 +289,14 @@ namespace ariel
 
     bool operator<=(const Fraction &fraction, const float &number)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return (float)fraction.numerator / (float)fraction.denominator <= number || fraction <= other;
+        // send to function <=(fraction,fraction)
+        return fraction <= Fraction(number);
     }
 
     bool operator<=(const float &number, const Fraction &fraction)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return number <= (float)fraction.numerator / (float)fraction.denominator || other <= fraction;
+        // send to function <=(fraction,float)
+        return fraction >= number;
     }
 
 
@@ -321,7 +304,7 @@ namespace ariel
     // Operator >
     bool Fraction::operator>(const Fraction &other) const
     {
-        // check in fraction form or float form
+        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
         float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
         float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator > this->denominator * other.numerator || f1 > f2;
@@ -329,23 +312,20 @@ namespace ariel
 
     bool operator>(const Fraction &fraction, const float &number)
     {
-        // check in fraction form or float form
-        float res = (float)fraction.numerator / (float)fraction.denominator;
-        Fraction other(number);
-        return fraction > other || res > number;
+        // send to function >(fraction,fraction)
+        return fraction > Fraction(number);
     }
 
     bool operator>(const float &number, const Fraction &fraction)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return number > (float)fraction.numerator / (float)fraction.denominator || other > fraction;
+        // send to function >(fraction,float)
+        return fraction < number;
     }
 
     //Operator >=
     bool Fraction::operator>=(const Fraction &other) const
     {
-        // check in fraction form or float form
+        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
         float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
         float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
         return this->numerator * other.denominator >= this->denominator * other.numerator || f1 >= f2;
@@ -353,16 +333,14 @@ namespace ariel
 
     bool operator>=(const Fraction &fraction, const float &number)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return (float)fraction.numerator / (float)fraction.denominator >= number || fraction >= other;
+        // send to function >=(fraction,fraction)
+        return fraction >= Fraction(number);
     }
 
     bool operator>=(const float &number, const Fraction &fraction)
     {
-        // check in fraction form or float form
-        Fraction other(number);
-        return number >= (float)fraction.numerator / (float)fraction.denominator || other >= fraction;
+        // send to function >=(fraction,float)
+        return fraction <= number;
     }
     // ===================== End Overloaded Compromise Operators =====================
 
