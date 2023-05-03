@@ -1,6 +1,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
+#define MAX std::numeric_limits<int>::max()
+#define MIN std::numeric_limits<int>::min()
 using namespace std;
 
 namespace ariel{

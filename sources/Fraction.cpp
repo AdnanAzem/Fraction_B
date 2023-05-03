@@ -1,7 +1,6 @@
 #include <iostream>
 #include "Fraction.hpp"
-#define MAX std::numeric_limits<int>::max()
-#define MIN std::numeric_limits<int>::min()
+
 
 namespace ariel
 {
@@ -246,10 +245,8 @@ namespace ariel
     // Operator ==
     bool Fraction::operator==(const Fraction &other) const
     {
-        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
-        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
-        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
-        return this->numerator == other.numerator && this->denominator == other.denominator || f1 == f2;
+        // check the comprise between 2 fractions
+        return this->numerator == other.numerator && this->denominator == other.denominator;
     }
 
     bool operator==(const Fraction &fraction, const float &number)
@@ -267,10 +264,8 @@ namespace ariel
     // Operator <
     bool Fraction::operator<(const Fraction &other) const
     {
-        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
-        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
-        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
-        return this->numerator * other.denominator < this->denominator * other.numerator || f1 < f2;
+        // check the comprise between 2 fractions
+        return this->numerator * other.denominator < this->denominator * other.numerator ;
     }
 
     bool operator<(const Fraction &fraction, const float &number)
@@ -288,10 +283,8 @@ namespace ariel
     // Operator <=
     bool Fraction::operator<=(const Fraction &other) const
     {
-        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
-        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
-        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
-        return this->numerator * other.denominator <= this->denominator * other.numerator || f1 <= f2;
+        // check the comprise between 2 fractions
+        return this->numerator * other.denominator <= this->denominator * other.numerator;
     }
 
     bool operator<=(const Fraction &fraction, const float &number)
@@ -311,10 +304,8 @@ namespace ariel
     // Operator >
     bool Fraction::operator>(const Fraction &other) const
     {
-        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
-        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
-        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
-        return this->numerator * other.denominator > this->denominator * other.numerator || f1 > f2;
+        // check the comprise between 2 fractions
+        return this->numerator * other.denominator > this->denominator * other.numerator;
     }
 
     bool operator>(const Fraction &fraction, const float &number)
@@ -332,10 +323,8 @@ namespace ariel
     //Operator >=
     bool Fraction::operator>=(const Fraction &other) const
     {
-        // check the comprise in two forms : 1. (between 2 fractions) , 2. (between 2 floats)
-        float f1 = setFloatWith3Digits((float)this->numerator/(float)this->denominator);
-        float f2 = setFloatWith3Digits((float)other.numerator/(float)other.denominator);
-        return this->numerator * other.denominator >= this->denominator * other.numerator || f1 >= f2;
+        // check the comprise between 2 fractions
+        return this->numerator * other.denominator >= this->denominator * other.numerator ;
     }
 
     bool operator>=(const Fraction &fraction, const float &number)
