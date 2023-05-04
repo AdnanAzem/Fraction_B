@@ -22,14 +22,14 @@ namespace ariel
     // Constructor whith float input
     Fraction::Fraction(float n)
     {
-        // round num to 3 digits beyond the decimal point for accuarcy
+        // round the number to 3 digits after the decimal point.
         float round3Digits = setFloatWith3Digits(n);
 
-        // represent the float without decimal point and cast it to int,
-        //  then represent it as numerator and denominator
+        // represent the float number without decimal point and cast it to int
         int num = static_cast<int>(round3Digits * 1000);
         int den = 1000;
 
+        // represent it as numerator and denominator
         this->numerator = num;
         this->denominator = den;
         reduce();
