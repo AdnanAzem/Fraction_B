@@ -23,7 +23,7 @@ namespace ariel
     Fraction::Fraction(float n)
     {
         // round num to 3 digits beyond the decimal point for accuarcy
-        float round3Digits = set3Digits(n);
+        float round3Digits = setFloatWith3Digits(n);
 
         // represent the float without decimal point and cast it to int,
         //  then represent it as numerator and denominator
@@ -63,7 +63,7 @@ namespace ariel
     // ===================== Helper Functions =====================
 
     // check overflow between 2 fractions
-    bool checkFractionOverflow(const Fraction& f1, const Fraction& f2, char op) {
+    bool Fraction::checkFractionOverflow(const Fraction& f1, const Fraction& f2, char op) const{
         // Calculate the result of the arithmetic operation using long longs to avoid overflow
         long long result = 0;
         long long result2 = 0;
@@ -93,24 +93,19 @@ namespace ariel
 
 
     // return float number whith 3 digits after the point
-    float Fraction::set3Digits(float num)
+    float Fraction::setFloatWith3Digits(float num)
     {
         float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
         float ret = round / 1000;        // return the number into float
         return ret;
     }
 
-    // return float number whith 3 digits after the point
-    float setFloatWith3Digits(float num)
-    {
-        float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
-        float ret = round / 1000;        // return the number into float
-        return ret;
-    }
+
 
     // return the fraction in reduced form
     void Fraction::reduce()
     {
+        // if the numerator is 0 then the reduced form is 0/1
         if (numerator == 0)
         {
             denominator = 1;
@@ -153,7 +148,7 @@ namespace ariel
         return Fraction(this->numerator * other.denominator + this->denominator * other.numerator, this->denominator * other.denominator);
     }
 
-    Fraction operator+(const float &number, const Fraction &fraction)
+    Fraction operator+(const float &number, const Fraction &fraction) 
     {
         // send to function +(fraction, fraction)
         return Fraction(number) + fraction;
