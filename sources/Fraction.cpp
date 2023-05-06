@@ -95,6 +95,7 @@ namespace ariel
     // return float number whith 3 digits after the point
     float Fraction::setFloatWith3Digits(float num)
     {
+        //roundf() - Return The value of x rounded to the nearest integral (as a floating-point value).
         float round = roundf(num * 1000);        // multiply num by 1000 and round the number without decimal point
         float ret = round / 1000;        // return the number into float
         return ret;
@@ -377,18 +378,21 @@ namespace ariel
     istream &operator>>(istream &input, Fraction &fraction)
     {
         int num, den;
-        // peek() - Returns the next character in the input sequence, without extracting it: The character is left as the next character to be extracted from the stream.
-        if (input.fail() || input.peek() == EOF)
+        //fail() - Returns true if either (or both) the failbit or the badbit error state flags is set for the stream.
+        //peek() - Returns the next character in the input sequence, without extracting it: The character is left as the next character to be extracted from the stream.
+        if (input.fail() || input.peek() == EOF) // if there is no input
         {
+            //setstate() - Modifies the current internal error state flags by combining the current flags with those in argument state
+            //failbit - The last input operation failed because of an error related to the internal logic of the operation itself.
             input.setstate(std::ios_base::failbit);
         }
         input >> num;
-        if (input.peek() == EOF)
+        if (input.peek() == EOF) // if there is one input throw error
         {
             throw runtime_error("Error: There is one number");
         }
         input >> den;
-        if (den == 0)
+        if (den == 0) // if the denominator in input is 0
         {
             throw runtime_error("Error: Denominator can't be 0");
         }
